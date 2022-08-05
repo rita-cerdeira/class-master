@@ -26,11 +26,15 @@ public class ClassesService {
     }
 
     public List<ClassResponse> createClasses(ClassRequest classRequest) {
+
+        if (classRequest.endDate().isBefore(classRequest.startDate())) {
+            throw new IllegalArgumentException("End date can't be after start date!");
+        }
+
         List<Class> classesToCreate = classRequest.startDate().datesUntil(classRequest.endDate().plusDays(1))
                 .filter(date -> !classesRepository.existsInDay(date))
                 .map(date -> new Class(classRequest.className(), date, classRequest.capacity()))
-                .collect(Collectors.toList())
-        ;
+                .collect(Collectors.toList());
 
         logger.debug("{} classes being added: {}", classesToCreate.size(), classesToCreate);
         classesRepository.add(classesToCreate);
