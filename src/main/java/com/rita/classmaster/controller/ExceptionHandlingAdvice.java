@@ -11,6 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -22,6 +23,12 @@ public class ExceptionHandlingAdvice {
     @ExceptionHandler(IllegalArgumentException.class)
     protected ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException exception, WebRequest request) {
         logger.debug("Illegal argument: {}. Request: {}", exception.getMessage(), request);
+        return new ResponseEntity<>(Map.of("error", exception.getMessage()), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    protected ResponseEntity<Map<String, String>> handleNoSuchElement(NoSuchElementException exception, WebRequest request) {
+        logger.debug("No such element: {}. Request: {}", exception.getMessage(), request);
         return new ResponseEntity<>(Map.of("error", exception.getMessage()), BAD_REQUEST);
     }
 

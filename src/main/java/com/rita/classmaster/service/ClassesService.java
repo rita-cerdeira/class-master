@@ -9,7 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,4 +44,15 @@ public class ClassesService {
 
         return classesToCreate.stream().map(classMapper::classToClassResponse).collect(Collectors.toList());
     }
+
+    public Class addMemberToClass(String member, LocalDate date) {
+        Class bookedClass = findClassInDate(date).orElseThrow(() -> new NoSuchElementException("Class not found for given date."));
+        bookedClass.members().add(member);
+        return bookedClass;
+    }
+
+    private Optional<Class> findClassInDate(LocalDate date) {
+        return classesRepository.getByDate(date);
+    }
+
 }
